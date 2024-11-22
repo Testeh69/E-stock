@@ -1,4 +1,4 @@
-This repository contains Two Sofwtare:
+This repository contains two sofwtares:
   -Frontend : Mobile Software that read the QR code
   -Qr-code generator: Desktop software that generate the QR code
 
