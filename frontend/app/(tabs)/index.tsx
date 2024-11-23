@@ -13,13 +13,12 @@ export default function HomeScreen() {
 
 
   interface Stock {
-    id: number; // Clé primaire
+    id?: number; // Clé primaire
     designation: string; // Nom du produit ou article
     lot: number; // Numéro de lot
     quantite: number; // Quantité disponible
   }
 
-  const [path, setPath] = useState<string>("")
 
   const getCurrentDate = () => {
     const date = new Date();
@@ -35,13 +34,44 @@ export default function HomeScreen() {
   const sendData = async () => {
     try {
       const currentDate: string = getCurrentDate()
-      // Ouvrir la base de données et récupérer les données
       const db = await SQLite.openDatabaseAsync('databaseName');
       const getDataSql: Stock[] = await db.getAllAsync('SELECT designation, lot, quantite FROM stock');
       console.log(getDataSql);  // Afficher les données dans la console
-  
+      
+          // Ajouter des colonnes vides ou par défaut
+      const enhancedData = getDataSql.map((row) => ({
+        Référence: '',  // Colonne vide
+        Designation : row.designation, 
+        Etablissement: 'AXYLLUS TECHNOLOGIES SARL',  
+        Zone_de_stock: '',
+        Emplacement:'',
+        Lot: row.lot,
+        Série: "",
+        Tiers:"",
+        Affaire:"",
+        Statut_Qualité:"",
+        Unité:"",
+        Qté: "",
+        Coefficient:"",
+        Qté_comptée: row.quantite,
+        Validité:"",
+        Ecart:"",
+        Unité_référence:"",
+        Qté_référence:"",
+        Qté_réservée:"",
+        Unité_stock:"",
+        Qté_stock:"",
+        Coefficient_stock:"",
+        Cout_unitaire:"",
+        COut_total:"",
+        Cout_compté:"",
+        Ecart_montant:"",
+        Devise_cout:"EUR",
+        Barre_Longueur:""
+      }));
+
       // Créer la feuille Excel à partir des données
-      const worksheet = XLSX.utils.json_to_sheet(getDataSql);
+      const worksheet = XLSX.utils.json_to_sheet(enhancedData);
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
   
@@ -68,7 +98,6 @@ export default function HomeScreen() {
       await Sharing.shareAsync(fileUri);
   
       // Mettre à jour le chemin du fichier et afficher un message de succès
-      setPath(fileUri);
       Alert.alert('Succès', `Fichier créé et partagé avec succès : ${fileUri}`);
   
     } catch (error) {
