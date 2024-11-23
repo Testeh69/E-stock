@@ -15,7 +15,6 @@ export default function StockScreen() {
 
 
 
-
   const [listItem, setListItem] = useState<Stock[]|null|string> ("")
   const [listItemDelete, setListItemDelete] = useState<number[]> ([])
   const [handleState, setHandleState] = useState<number>(0)
@@ -129,7 +128,7 @@ export default function StockScreen() {
         // Check if history data exists and update state
         if (getDataHistory && getDataHistory.length > 0) {
           setTotalSum(getDataHistory.reduce(
-            (hist, item) => hist + item.quantite,
+            (hist, item) => item.quantite? hist + item.quantite :0,
             0
           ))
           setListSelectedItem(getDataHistory);  // Ensure setListSelectedItem updates correctly

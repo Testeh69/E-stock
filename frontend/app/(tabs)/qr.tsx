@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { View,Button, Text,TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 import * as SQLite from 'expo-sqlite';
-import {SearchQuantite} from '@/constants/Interface';
+import { Stock} from '@/constants/Interface';
 import { isError } from '@/constants/Utils';
 
 
@@ -53,7 +53,7 @@ export default function QrScreen() {
         throw new Error('Please make sure all fields are filled in');
       }
   
-      const searchResultQuantite : SearchQuantite |null = await db.getFirstAsync(
+      const searchResultQuantite : Stock|null = await db.getFirstAsync(
         `SELECT quantite FROM stock WHERE lot = ? AND designation = ?`, 
         qrDataLot, qrDataDesignation
       );
