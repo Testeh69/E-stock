@@ -1,23 +1,99 @@
-import { Link } from 'expo-router';
 import { View,Alert,TextInput, Text,Button, StyleSheet } from 'react-native';
-import { useState } from 'react';
-import emailjs from 'emailjs-com';  // Import EmailJS
+import * as FileSystem from "expo-file-system";
+import * as Sharing from "expo-sharing";
+import XLSX from "xlsx";
+import * as SQLite from 'expo-sqlite';
+import { Stock } from '@/constants/Interface';
+import { getCurrentDate, arrayBufferToBase64 } from '@/constants/Utils';
 
 
 export default function HomeScreen() {
-  const [email, setEmail] = useState<string>("")
 
 
 
-  const sendData = () => {
+  const sendData = async () => {
+    try {
+      const currentDate: string = getCurrentDate()
+      const db = await SQLite.openDatabaseAsync('databaseName');
+      const getDataSql: Stock[] = await db.getAllAsync('SELECT designation, lot, quantite FROM stock');
+      console.log(getDataSql);  // Afficher les données dans la console
+      
+          // Ajouter des colonnes vides ou par défaut
+      const enhancedData = getDataSql.map((row) => ({
+        Référence: '',  // Colonne vide
+        Designation : row.designation, 
+        Etablissement: 'AXYLLUS TECHNOLOGIES SARL',  
+        Zone_de_stock: '',
+        Emplacement:'',
+        Lot: row.lot,
+        Série: "",
+        Tiers:"",
+        Affaire:"",
+        Statut_Qualité:"",
+        Unité:"",
+        Qté: "",
+        Coefficient:"",
+        Qté_comptée: row.quantite,
+        Validité:"",
+        Ecart:"",
+        Unité_référence:"",
+        Qté_référence:"",
+        Qté_réservée:"",
+        Unité_stock:"",
+        Qté_stock:"",
+        Coefficient_stock:"",
+        Cout_unitaire:"",
+        COut_total:"",
+        Cout_compté:"",
+        Ecart_montant:"",
+        Devise_cout:"EUR",
+        Barre_Longueur:""
+      }));
+
+      // Créer la feuille Excel à partir des données
+      const worksheet = XLSX.utils.json_to_sheet(enhancedData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
   
+      // Convertir le workbook en chaîne binaire
+      const binaryExcel = XLSX.write(workbook, { type: 'binary', bookType: 'xlsx' });
+  
+      // Convertir la chaîne binaire en tableau d'octets (Uint8Array)
+      const buffer = new ArrayBuffer(binaryExcel.length);
+      const view = new Uint8Array(buffer);
+      for (let i = 0; i < binaryExcel.length; i++) {
+        view[i] = binaryExcel.charCodeAt(i) & 0xff;
+      }
+  
+      // Convertir le tableau d'octets en base64
+      const base64Data = arrayBufferToBase64(buffer);
+  
+      // Définir le chemin du fichier
+      const fileUri: string = FileSystem.documentDirectory + currentDate + `_stock.xlsx`;
+  
+      // Écrire les données en base64 dans un fichier
+      await FileSystem.writeAsStringAsync(fileUri, base64Data, { encoding: FileSystem.EncodingType.Base64 });
+  
+      // Partager le fichier
+      await Sharing.shareAsync(fileUri);
+  
+      // Mettre à jour le chemin du fichier et afficher un message de succès
+      Alert.alert('Succès', `Fichier créé et partagé avec succès : ${fileUri}`);
+  
+    } catch (error) {
+      // Gestion des erreurs
+      console.error('Erreur lors de la création ou du partage du fichier :', error);
+      Alert.alert('Erreur', 'Impossible de créer ou partager le fichier.');
+    }
   };
+  
+  // Fonction pour convertir ArrayBuffer en base64
 
 
 const confirmSendData = () => {
   Alert.alert(
-    "Confirmation d'envoie de données",
-    `Êtes-vous sûr de vouloir envoyer les données à l'adresse suivante : ${email} ?`,
+    `Confirmation d'envoie de données le: ${getCurrentDate()}`,
+    `Vous voulez envoyez le fichier xslx ? `,
     [
       { text: "Annuler", style: "cancel" },
       { text: "Confirmer", onPress: sendData },
@@ -33,14 +109,6 @@ const confirmSendData = () => {
       <Text style = {styles.titles}>Inventaire</Text>
     </View>
     <View style = { styles.wrapper__email}>
-      <TextInput
-        style={styles.input}
-        onChangeText={(text)=>setEmail(text)}
-        placeholder="Enter your email"
-        keyboardType="email-address"  // Makes the keyboard more suited for email input
-        autoCapitalize="none"         // Prevents capitalizing the first letter
-        textContentType="emailAddress" // Ensures the text content type is email
-      />
         <Button
         title = "send"
         onPress = {confirmSendData}

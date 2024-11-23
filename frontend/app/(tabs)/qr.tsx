@@ -2,24 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { View,Button, Text,TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 import * as SQLite from 'expo-sqlite';
+import {SearchQuantite} from '@/constants/Interface';
+import { isError } from '@/constants/Utils';
 
 
 
 
-
-
-export default function HomeScreen() {
+export default function QrScreen() {
   
-  interface SearchQuantite{
-    quantite:number |null;
-  }
+
   const [qrDataDesignation, setQrDataDesignation] = useState<string|null>(null)
   const [qrDataLot, setQrDataLot] = useState<string | null>(null);
   const [quantite, setQuantite] = useState<string>('');
   
-  function isError(error: unknown): error is Error {
-    return error instanceof Error;
-}
+
 
   const openDatabase = async () => {
     try {
