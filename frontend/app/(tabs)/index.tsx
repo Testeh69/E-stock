@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet } from 'react-native';
-import SendEmail from '@/components/SendEmail';
+import SendEmail from '@/components/index/SendEmail';
 
 
 export default function HomeScreen() {

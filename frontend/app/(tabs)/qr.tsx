@@ -1,11 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
-import { View,Button, Text,TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState,createContext } from 'react';
+import { View,Button, Text,TextInput, StyleSheet } from 'react-native';
 import * as SQLite from 'expo-sqlite';
 import { Stock} from '@/constants/Interface';
 import { isError } from '@/constants/Utils';
+import CameraElement from '@/components/qr/Camera';
+import FormDataQr from '@/components/qr/FormData';
 
 
+
+export const SetQrData = createContext<{
+  setQrDataDesignation: React.Dispatch<React.SetStateAction<string | null>>;
+  setQrDataLot: React.Dispatch<React.SetStateAction<string | null>>;
+}>({ setQrDataDesignation: () => {}, setQrDataLot: () => {} });
+
+export const FillFormDataQrCode = createContext<{
+  qrDataDesignation :string | null;
+  qrDataLot: string | null;
+  quantite: string | null;
+  setQuantite: React.Dispatch<React.SetStateAction<string | null>>
+}>({
+  qrDataDesignation: null,
+  qrDataLot: null,
+  quantite: null,
+  setQuantite: () => {},
+});
 
 
 export default function QrScreen() {
@@ -13,15 +31,13 @@ export default function QrScreen() {
 
   const [qrDataDesignation, setQrDataDesignation] = useState<string|null>(null)
   const [qrDataLot, setQrDataLot] = useState<string | null>(null);
-  const [quantite, setQuantite] = useState<string>('');
+  const [quantite, setQuantite] = useState<string|null>('');
   
 
 
   const openDatabase = async () => {
     try {
       const db = await SQLite.openDatabaseAsync('databaseName');
-      
-      
       try{
       await db.execAsync(`
         PRAGMA journal_mode = WAL;
@@ -32,14 +48,11 @@ export default function QrScreen() {
           quantite INTEGER NOT NULL
         );
       `);
-
-    
       await db.runAsync(
         "INSERT INTO history (designation, lot, quantite) VALUES (?, ?, ?)", 
         qrDataDesignation, qrDataLot, quantite
       );
     }catch (error) {
-      // Handle specific errors
       if (error instanceof Error) {
         console.error("Error message:", error.message);
         alert(`Error: ${error.message}`);
@@ -53,13 +66,11 @@ export default function QrScreen() {
         throw new Error('Please make sure all fields are filled in');
       }
   
-      const searchResultQuantite : Stock|null = await db.getFirstAsync(
+     const searchResultQuantite : Stock|null = await db.getFirstAsync(
         `SELECT quantite FROM stock WHERE lot = ? AND designation = ?`, 
         qrDataLot, qrDataDesignation
       );
-  
       if (searchResultQuantite && searchResultQuantite.quantite !== undefined && searchResultQuantite.quantite !== null) {
-        // If the item exists, update the quantity
         const updatedQuantite = searchResultQuantite.quantite + parseInt(quantite, 10);
         const updateQueryQuantite = await db.runAsync(
           "UPDATE stock SET quantite = ? WHERE lot = ? AND designation = ?", 
@@ -76,27 +87,18 @@ export default function QrScreen() {
             quantite INTEGER NOT NULL
           );
         `);
-  
-        // Insert the new stock item
         await db.runAsync(
           "INSERT INTO stock (designation, lot, quantite) VALUES (?, ?, ?)", 
           qrDataDesignation, qrDataLot, quantite
         );
         console.log('New stock item added');
       }
-  
       console.log("Data saved successfully");
-  
-      // Reset the form data after successful save
       setQrDataDesignation(null);
       setQrDataLot(null);
       setQuantite("");
-  
-      // Optionally: Show a success message to the user
       alert("Data saved successfully!");
-  
     } catch (error) {
-      // Handle specific errors
       if (error instanceof Error) {
         console.error("Error message:", error.message);
         alert(`Error: ${error.message}`);
@@ -121,28 +123,7 @@ export default function QrScreen() {
       } else {
           console.error("Unknown error:", error);
       }
-  }
-  
-    }
-    
-    
-  
-
-  const handleBarCodeScanned = ({ type, data }: { type: string, data: string}) => {
-    try{
-    const datasplit = data.split(",")
-    setQrDataDesignation(datasplit[0].slice(1,-1))
-    setQrDataLot(datasplit[1].slice(0,-2));}
-    
-    catch (error) {
-      if (isError(error)) {
-          console.error("Error message:", error.message);
-      } else {
-          console.error("Unknown error:", error);
-      }
-  }};
-
-
+  }}
 
   
   return (
@@ -151,44 +132,12 @@ export default function QrScreen() {
         <Text style={styles.titles}>Inventaire</Text>
       </View>
       <View style={styles.body}>
-        <View style={styles.camera}>
-          <CameraView style={styles.apicamera} 
-          facing={"back"}  
-          barcodeScannerSettings={{
-                                    barcodeTypes: ["qr"],
-                                  }}
-          onBarcodeScanned={handleBarCodeScanned}>
-          </CameraView>
-        </View>
-        <View style = {styles.data}>
-          <View style = {styles.information}>
-                <Text>
-                    En cours de Travaux Historiques
-                </Text>
-            </View>
-            <View style = {styles.information}>
-                <Text>
-                    Désignation : {qrDataDesignation}
-                </Text>
-            </View>
-            <View style = {styles.information}>
-                <Text>
-                    Lot :   {qrDataLot}
-                </Text>  
-            </View>
-            <View style = {styles.information}>
-                <Text>
-                    Quantité :  
-                </Text>
-                <TextInput 
-                    style={styles.input}
-                    placeholder="Entrez une quantité"
-                    keyboardType="numeric"
-                    value={quantite}
-                    onChangeText={setQuantite}
-                />
-            </View>
-        </View>
+        <SetQrData.Provider value = {{setQrDataDesignation, setQrDataLot}}>
+          <CameraElement />
+        </SetQrData.Provider>
+        <FillFormDataQrCode.Provider value = {{qrDataDesignation, qrDataLot, quantite, setQuantite}}>
+          <FormDataQr />
+        </FillFormDataQrCode.Provider>
         <Button
             onPress={handleSave}
             title="Save"
@@ -206,67 +155,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
   },
-  body: {
-    flex: 1,
-    marginTop: '10%',
-    flexDirection: 'column',
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
-    backgroundColor: 'red',
-    width: '100%',
-  },
-  camera: {
-    backgroundColor: 'blue',
-    height: 300, // Remplace les pourcentages par des pixels ou une valeur adaptative
-    width: '80%',
-  },
-
-  apicamera:{
-    flex:1
-  },
-
-  information:{
-    display: "flex",
-    flexDirection: "row",
-    backgroundColor: "green",
-    justifyContent: "space-evenly",
-    alignItems: "center",
-    width: "80%"
-  },
-
-  data:{
-    backgroundColor: "white",
-    width: "80%",
-    display: "flex",
-    justifyContent: "space-evenly",
-    alignItems: "center",
-    height: "30%"
-  },
-  input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginTop: 8,
-    paddingHorizontal: 8,
-  },
-
-  cameraControls: {
-    flex: 1,
-    backgroundColor: 'transparent',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'flex-end',
-  },
-  flipButton: {
-    flex: 0.1,
-    alignSelf: 'flex-end',
-    alignItems: 'center',
-  },
-  flipText: {
-    fontSize: 18,
-    marginBottom: 10,
-    color: 'white',
-  },
   container: {
     marginTop: 50,
     display: 'flex',
@@ -277,8 +165,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#F61515',
     borderRadius: 10, // Fixe les valeurs numériques
   },
+  
   titles: {
     fontWeight: 'bold',
     fontSize: 20,
   },
+
+  body: {
+    flex: 1,
+    marginTop: '10%',
+    flexDirection: 'column',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    backgroundColor: 'red',
+    width: '100%',
+  },
+
 });
