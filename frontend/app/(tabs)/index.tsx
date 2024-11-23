@@ -1,34 +1,14 @@
-import { Link } from 'expo-router';
 import { View,Alert,TextInput, Text,Button, StyleSheet } from 'react-native';
-import { useState } from 'react';
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
 import XLSX from "xlsx";
 import * as SQLite from 'expo-sqlite';
-
-
+import { Stock } from '@/constants/Interface';
+import { getCurrentDate, arrayBufferToBase64 } from '@/constants/Utils';
 
 
 export default function HomeScreen() {
 
-
-  interface Stock {
-    id?: number; // Clé primaire
-    designation: string; // Nom du produit ou article
-    lot: number; // Numéro de lot
-    quantite: number; // Quantité disponible
-  }
-
-
-  const getCurrentDate = () => {
-    const date = new Date();
-  
-    const day = String(date.getDate()).padStart(2, '0'); // Ajouter un zéro devant si nécessaire
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Les mois sont indexés à partir de 0
-    const year = date.getFullYear();
-  
-    return `${day}-${month}-${year}`;
-  };
 
 
   const sendData = async () => {
@@ -108,14 +88,7 @@ export default function HomeScreen() {
   };
   
   // Fonction pour convertir ArrayBuffer en base64
-  const arrayBufferToBase64 = (buffer: ArrayBuffer) => {
-    const bytes = new Uint8Array(buffer);
-    let binary = '';
-    for (let i = 0; i < bytes.length; i++) {
-      binary += String.fromCharCode(bytes[i]);
-    }
-    return window.btoa(binary);
-  };
+
 
 const confirmSendData = () => {
   Alert.alert(

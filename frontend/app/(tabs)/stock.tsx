@@ -1,6 +1,7 @@
 import { View,Alert,Button, Text,FlatList, StyleSheet, TouchableHighlight  } from 'react-native';
 import * as SQLite from 'expo-sqlite';
 import React, { useState, useEffect } from 'react';
+import { Stock , SearchResult } from '@/constants/Interface';
 
 
 
@@ -9,22 +10,12 @@ import React, { useState, useEffect } from 'react';
 
 
 
-
-export default function TabTwoScreen() {
-
-
-  interface Stock {
-    id: number; // Clé primaire
-    designation: string; // Nom du produit ou article
-    lot: number; // Numéro de lot
-    quantite: number; // Quantité disponible
-  }
+export default function StockScreen() {
 
 
-  interface SearchResult{
-    designation: string;
-    lot: number;
-  }
+
+
+
   const [listItem, setListItem] = useState<Stock[]|null|string> ("")
   const [listItemDelete, setListItemDelete] = useState<number[]> ([])
   const [handleState, setHandleState] = useState<number>(0)
@@ -188,10 +179,10 @@ export default function TabTwoScreen() {
 
       <View style = {styles.changeState}>
       {handleState === 0 ? (
-  listItem ? (
+  listItem && Array.isArray(listItem) ? (
     <FlatList<Stock>
       data={listItem}
-      keyExtractor={(item) => item.id.toString()}
+      keyExtractor={(item) => item.id?.toString() ?? 'defaultKey'}
       renderItem={({ item }) => (
         <View
           style={{
@@ -201,8 +192,8 @@ export default function TabTwoScreen() {
           }}
         >
           <TouchableHighlight
-            onPress={() => pushInDelete(item.id)}
-            style={listItemDelete?.includes(item.id) ? styles.selected : styles.normal}
+            onPress={() => item.id ?pushInDelete(item.id): null}
+            style={item.id ? (listItemDelete?.includes(item.id) ? styles.selected : styles.normal):null}
           >
             <Text style={styles.elements}>
               {`Designation: ${item.designation}, Lot: ${item.lot}, Quantité: ${item.quantite}`}
@@ -217,8 +208,8 @@ export default function TabTwoScreen() {
 ) : 
   <View>
   <FlatList<Stock>
-      data={listSelectedItem}
-      keyExtractor={(item) => item.id.toString()}
+      data={Array.isArray(listSelectedItem) ? listSelectedItem : null}
+      keyExtractor={(item) => item.id?.toString() ?? 'defaultKey'} // Retourne une clé valide, même si 'id' est undefined
       renderItem={({ item }) => (
         <View
           style={{
