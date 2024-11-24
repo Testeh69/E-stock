@@ -4,9 +4,9 @@
 
 export interface Stock {
     id?: number; 
-    designation: string; 
-    lot: number; 
-    quantite: number;
+    designation?: string; 
+    lot?: number; 
+    quantite?: number | null;
   }
 
 
@@ -17,5 +17,5 @@ export interface Stock {
 
 
   export interface SearchQuantite{
-    quantite:number |null;
+    quantite:number|null;
   }
