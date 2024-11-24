@@ -1,29 +1,13 @@
-import React, { useState,createContext } from 'react';
-import { View,Button, Text,TextInput, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View,Button, Text, StyleSheet } from 'react-native';
 import * as SQLite from 'expo-sqlite';
 import { Stock} from '@/constants/Interface';
 import { isError } from '@/constants/Utils';
 import CameraElement from '@/components/qr/Camera';
 import FormDataQr from '@/components/qr/FormData';
+import { FillFormDataQrCode,SetQrData } from '@/components/qr/ContextQr';
 
 
-
-export const SetQrData = createContext<{
-  setQrDataDesignation: React.Dispatch<React.SetStateAction<string | null>>;
-  setQrDataLot: React.Dispatch<React.SetStateAction<string | null>>;
-}>({ setQrDataDesignation: () => {}, setQrDataLot: () => {} });
-
-export const FillFormDataQrCode = createContext<{
-  qrDataDesignation :string | null;
-  qrDataLot: string | null;
-  quantite: string | null;
-  setQuantite: React.Dispatch<React.SetStateAction<string | null>>
-}>({
-  qrDataDesignation: null,
-  qrDataLot: null,
-  quantite: null,
-  setQuantite: () => {},
-});
 
 
 export default function QrScreen() {

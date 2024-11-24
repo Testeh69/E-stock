@@ -1,28 +1,19 @@
-import { View,Alert,Button, Text,FlatList, StyleSheet, TouchableHighlight  } from 'react-native';
+import { View,Alert,Button, Text, StyleSheet} from 'react-native';
 import * as SQLite from 'expo-sqlite';
-import React, { useState, useEffect, useContext, createContext } from 'react';
+import React, { useState, useEffect} from 'react';
 import { Stock , SearchResult } from '@/constants/Interface';
 import StockData from '@/components/stock/StockData';
+import ModifierStockData from '@/components/stock/ModifierStockData';
+import { StockDataDisplay, ModifierDataDisplay } from '@/components/stock/ContextStock';
 
 
 
 
-
-export const StockDataDisplay = createContext<{
-  listItem : Stock[]|null|string;
-  listItemDelete : number[];
-  setListItemDelete :React.Dispatch<React.SetStateAction<number[]>>; 
-}>({
-  listItem: null, // Valeur par défaut cohérente
-  listItemDelete: [], // Tableau vide comme valeur par défaut
-  setListItemDelete: () => {}, // Fonction par défaut vide
-});
 
 
 
 
 export default function StockScreen() {
-
 
 
 
@@ -112,14 +103,11 @@ export default function StockScreen() {
   const getDataResult = async () => {
     try {
       const db = await SQLite.openDatabaseAsync('databaseName');
-  
-      // Fetch data from the 'stock' table
       const getData: SearchResult | null | undefined = await db.getFirstAsync(
         'SELECT lot, designation FROM stock WHERE id = ?',
         listItemDelete[0]
       );
   
-      // If getData is valid and contains both 'designation' and 'lot'
       if (getData?.designation && getData?.lot) {
         const getDataHistory: Stock[] | null | undefined = await db.getAllAsync(
           'SELECT * FROM history WHERE designation = ? AND lot = ?',
@@ -148,15 +136,14 @@ export default function StockScreen() {
 
   const handleStateModifier = () => {
     if (handleState === 0) {
+      setListItemDelete([])
       setHandleState(1);
       getDataResult();
     } else {
+      setListItemDelete([])
       setHandleState(0);
       setListSelectedItem(null)
-    }
-    console.log(handleState)
-    console.log(listSelectedItem)
-  };
+    }};
 
   useEffect(() => {
     getData();
@@ -167,7 +154,6 @@ export default function StockScreen() {
     const interval = setInterval(() => {
       getData();
     }, 1000); 
-
     return () => clearInterval(interval);
   }, []);
 
@@ -179,59 +165,44 @@ export default function StockScreen() {
       </Text>
 
       <View style = {styles.changeState}>
-      {handleState === 0 ? (
-  listItem ? (
-    <StockDataDisplay.Provider value = {{listItem, listItemDelete, setListItemDelete}}>
-      <StockData />
-    </StockDataDisplay.Provider>
-  ) : (
-    <Text>Chargement des articles...</Text>
-  )
-) : 
-  <View>
-  <FlatList<Stock>
-      data={Array.isArray(listSelectedItem) ? listSelectedItem : null}
-      keyExtractor={(item) => item.id?.toString() ?? 'defaultKey'} 
-      renderItem={({ item }) => (
-        <View
-          style={{
-            backgroundColor: 'blue',
-            display: 'flex',
-            justifyContent: 'space-evenly',
-          }}
-        >
-        <Text style={styles.elements}>
-              {`Designation: ${item.designation}, Lot: ${item.lot}, Quantité: ${item.quantite}`}
-        </Text>
+      {handleState === 0 ? 
+        (listItem ? 
+          (<StockDataDisplay.Provider value = {{listItem, listItemDelete, setListItemDelete}}>
+             <StockData />
+           </StockDataDisplay.Provider>)
+           : 
+          (<Text>Chargement des articles...</Text>))
+          : 
+            <ModifierDataDisplay.Provider value = {{listSelectedItem, totalSum}}>
+              <ModifierStockData />
+            </ModifierDataDisplay.Provider>
+        }
+        <View style={styles.pannel__button}>{
+          handleState === 0 ?          
+          <Button
+            title={listItemDelete.length > 0 ? `Delete ${listItemDelete.length}` : 'Delete All'}
+            onPress={confirmDeletion}
+            color="#841584"
+            accessibilityLabel="Delete button"
+          />: (
+            listItemDelete.length === undefined ?  
+            <Button
+            title={listItemDelete.length > 0 ? `Delete ${listItemDelete.length}` : 'Delete All'}
+            onPress={confirmDeletion}
+            color="#841584"
+            accessibilityLabel="Delete button"
+          />:null
+          )}
+          {(listItemDelete.length === 1 && handleState === 0) || handleState === 1 ? (
+            <Button
+              onPress={() => handleStateModifier()}
+              title={handleState === 0 ? 'Modifier' : 'Back'}
+            />
+          ) : null}
         </View>
-      )}
-    />
-  <Text style = {styles.elements__modifier}>
-    Quantités totales : {totalSum}
-  </Text>
-  </View>
-  }
-
-
-<View style={styles.pannel__button}>
-  <Button
-    title={listItemDelete.length > 0 ? `Delete ${listItemDelete.length}` : 'Delete All'}
-    onPress={confirmDeletion}
-    color="#841584"
-    accessibilityLabel="Delete button"
-  />
-
-  {listItemDelete.length === 1 ? (
-    <Button
-      onPress={() => handleStateModifier()}
-      title={handleState === 0 ? 'Modifier' : 'Back'}
-    />
-  ) : null}
-</View>
       </View>   
     </View>
-  );
-}
+    );}
 
 const styles = StyleSheet.create({
   changeState: {

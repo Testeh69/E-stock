@@ -2,8 +2,7 @@ import React, {useContext } from 'react';
 import { CameraView} from 'expo-camera';
 import { View, StyleSheet } from 'react-native';
 import { isError } from '@/constants/Utils';
-import {SetQrData} from '@/app/(tabs)/qr';
-
+import { SetQrData } from './ContextQr';
 
 
 export default function CameraElement(){

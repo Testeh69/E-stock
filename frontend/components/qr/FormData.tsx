@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { View, Text,TextInput, StyleSheet } from 'react-native';
-import { FillFormDataQrCode } from '@/app/(tabs)/qr';
+import { FillFormDataQrCode } from './ContextQr';
 
 
 export default function FormDataQr(){

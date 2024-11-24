@@ -1,8 +1,7 @@
-import { View,Alert,Button, Text,FlatList, StyleSheet, TouchableHighlight  } from 'react-native';
-import * as SQLite from 'expo-sqlite';
-import React, { useState, useEffect, useContext, createContext } from 'react';
-import { Stock , SearchResult } from '@/constants/Interface';
-import { StockDataDisplay } from '@/app/(tabs)/stock';
+import { View,Text,FlatList, StyleSheet, TouchableHighlight  } from 'react-native';
+import React, {useContext} from 'react';
+import { Stock } from '@/constants/Interface';
+import { StockDataDisplay } from './ContextStock';
 
 
 
@@ -14,7 +13,6 @@ const StockData = () => {
     const pushInDelete = (element: number) => {
         if (listItem !== null && listItemDelete?.includes(element) ) {
           setListItemDelete((prev) => (prev ? prev.filter((item) => item !== element) : []));
-          console.log(listItemDelete);
         }
         else{
           setListItemDelete((prev) => (prev ? [...prev, element] : [element]));
