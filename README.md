@@ -2,7 +2,7 @@ This repository contains two sofwtares:
 
   -Frontend : Mobile Software that read the QR code
 
-  -qrcode_generator: Desktop software that generate the QR code
+  -qrcode-generator: Desktop software that generate the QR code
 
 
 
