@@ -10,11 +10,6 @@ export default function FormDataQr(){
 
     return (
         <View style = {styles.data}>
-          <View style = {styles.information}>
-                <Text>
-                    En cours de Travaux Historiques
-                </Text>
-            </View>
             <View style = {styles.information}>
                 <Text>
                     Désignation : {qrDataDesignation}

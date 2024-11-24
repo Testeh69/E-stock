@@ -1,11 +1,22 @@
 import { View,Alert,Button, Text,FlatList, StyleSheet, TouchableHighlight  } from 'react-native';
 import * as SQLite from 'expo-sqlite';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext, createContext } from 'react';
 import { Stock , SearchResult } from '@/constants/Interface';
+import StockData from '@/components/stock/StockData';
 
 
 
 
+
+export const StockDataDisplay = createContext<{
+  listItem : Stock[]|null|string;
+  listItemDelete : number[];
+  setListItemDelete :React.Dispatch<React.SetStateAction<number[]>>; 
+}>({
+  listItem: null, // Valeur par défaut cohérente
+  listItemDelete: [], // Tableau vide comme valeur par défaut
+  setListItemDelete: () => {}, // Fonction par défaut vide
+});
 
 
 
@@ -21,16 +32,7 @@ export default function StockScreen() {
   const [listSelectedItem, setListSelectedItem] = useState<Stock[]|null|string>("")
   const [totalSum, setTotalSum] = useState<number|null>(null)
 
-  const pushInDelete = (element: number) => {
-    if (listItem !== null && listItemDelete?.includes(element) ) {
-      setListItemDelete((prev) => (prev ? prev.filter((item) => item !== element) : []));
-      console.log(listItemDelete);
-    }
-    else{
-      setListItemDelete((prev) => (prev ? [...prev, element] : [element]));
 
-    }
-  };
 
 
   const deleteData = async () => {
@@ -178,29 +180,10 @@ export default function StockScreen() {
 
       <View style = {styles.changeState}>
       {handleState === 0 ? (
-  listItem && Array.isArray(listItem) ? (
-    <FlatList<Stock>
-      data={listItem}
-      keyExtractor={(item) => item.id?.toString() ?? 'defaultKey'}
-      renderItem={({ item }) => (
-        <View
-          style={{
-            backgroundColor: 'blue',
-            display: 'flex',
-            justifyContent: 'space-evenly',
-          }}
-        >
-          <TouchableHighlight
-            onPress={() => item.id ?pushInDelete(item.id): null}
-            style={item.id ? (listItemDelete?.includes(item.id) ? styles.selected : styles.normal):null}
-          >
-            <Text style={styles.elements}>
-              {`Designation: ${item.designation}, Lot: ${item.lot}, Quantité: ${item.quantite}`}
-            </Text>
-          </TouchableHighlight>
-        </View>
-      )}
-    />
+  listItem ? (
+    <StockDataDisplay.Provider value = {{listItem, listItemDelete, setListItemDelete}}>
+      <StockData />
+    </StockDataDisplay.Provider>
   ) : (
     <Text>Chargement des articles...</Text>
   )
@@ -208,7 +191,7 @@ export default function StockScreen() {
   <View>
   <FlatList<Stock>
       data={Array.isArray(listSelectedItem) ? listSelectedItem : null}
-      keyExtractor={(item) => item.id?.toString() ?? 'defaultKey'} // Retourne une clé valide, même si 'id' est undefined
+      keyExtractor={(item) => item.id?.toString() ?? 'defaultKey'} 
       renderItem={({ item }) => (
         <View
           style={{
