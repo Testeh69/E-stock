@@ -17,7 +17,9 @@ export const StockDataDisplay = createContext<{
   export const ModifierDataDisplay = createContext<{
     listSelectedItem:Stock[]|null|string;
     totalSum:number|null;
+    setTotalSum : React.Dispatch<React.SetStateAction<number|null>>;
   }>({
       listSelectedItem : null,
-      totalSum: null
+      totalSum: null,
+      setTotalSum: () => {},
   })
