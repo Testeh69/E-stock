@@ -59,11 +59,8 @@ export default function StockScreen() {
           'DELETE FROM history'
         );
         alert(`All Data Deleted succesfully`);
-
       }
-
-
-     
+  
     } catch (error) {
       console.error('Erreur lors de la suppression des données');
     }
@@ -151,11 +148,9 @@ export default function StockScreen() {
 
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      getData();
-    }, 1000); 
+    const interval = setInterval(() => {getData();}, 1000); 
     return () => clearInterval(interval);
-  }, []);
+    }, []);
 
 
   return (
@@ -173,7 +168,7 @@ export default function StockScreen() {
            : 
           (<Text>Chargement des articles...</Text>))
           : 
-            <ModifierDataDisplay.Provider value = {{listSelectedItem, totalSum}}>
+            <ModifierDataDisplay.Provider value = {{listSelectedItem, totalSum, setTotalSum}}>
               <ModifierStockData />
             </ModifierDataDisplay.Provider>
         }
@@ -183,22 +178,19 @@ export default function StockScreen() {
             title={listItemDelete.length > 0 ? `Delete ${listItemDelete.length}` : 'Delete All'}
             onPress={confirmDeletion}
             color="#841584"
-            accessibilityLabel="Delete button"
-          />: (
-            listItemDelete.length === undefined ?  
+            accessibilityLabel="Delete button"/>: 
+            (listItemDelete.length === undefined ?  
             <Button
             title={listItemDelete.length > 0 ? `Delete ${listItemDelete.length}` : 'Delete All'}
             onPress={confirmDeletion}
             color="#841584"
-            accessibilityLabel="Delete button"
-          />:null
-          )}
+            accessibilityLabel="Delete button"/>:
+            null)}
           {(listItemDelete.length === 1 && handleState === 0) || handleState === 1 ? (
             <Button
               onPress={() => handleStateModifier()}
               title={handleState === 0 ? 'Modifier' : 'Back'}
-            />
-          ) : null}
+            />): null}
         </View>
       </View>   
     </View>

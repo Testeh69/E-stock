@@ -1,4 +1,4 @@
-import { View,Alert, Text,Button, StyleSheet } from 'react-native';
+import { View,Alert,Text, TouchableOpacity,Button, StyleSheet } from 'react-native';
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
 import XLSX from "xlsx";
@@ -90,11 +90,10 @@ export default function SendEmail (){
     }
     
     return (
-        <View style = { styles.wrapper__email}>
-        <Button
-        title = "send"
-        onPress = {confirmSendData}
-        />
+      <View style = { styles.wrapper__email}>
+        <TouchableOpacity style={styles.button} onPress={confirmSendData} >
+          <Text>Send</Text>
+        </TouchableOpacity>
       </View>
 
     )
@@ -102,14 +101,21 @@ export default function SendEmail (){
 
 
 const styles = StyleSheet.create({
-
-
     wrapper__email:{
       display:"flex",
       flexDirection:"column",
-      justifyContent:"center",
+      justifyContent:"flex-end",
       alignItems:"center",
       width:"100%",
       height:"80%",
-      backgroundColor:"yellow",
-    }})
+    },
+    button:{
+      display: "flex",
+      alignItems:"center",
+      justifyContent:"center",
+      height: 30,
+      width: 100,
+      borderRadius:10,
+      backgroundColor:"cyan",
+    }
+  })
