@@ -13,10 +13,42 @@ const ModifierStockData = () => {
     const deleteDataInDatabase = async(id:number) => {
       try {
         const db = await SQLite.openDatabaseAsync('databaseName');
-        const result = await db.getFirstAsync(`SELECT lot, designation FROM history WHERE id = ?`,[id]);
-        const { lot, designation } = result as { lot: string; designation: string };
-        await db.getFirstAsync(`DELETE FROM history WHERE id = ?`, id)
-        await db.getFirstAsync(`DELETE FROM stock WHERE lot = ? and designation = ?`, lot, designation)
+        const result = await db.getFirstAsync(
+          `SELECT lot, designation, quantite FROM history WHERE id = ?`,
+          [id]
+        );
+
+        const { lot, designation, quantite } = result as {
+          lot: string;
+          designation: string;
+          quantite: number | null;
+        };
+
+        const quantiteHistory: number = quantite ?? 0;
+
+        await db.runAsync(`DELETE FROM history WHERE id = ?`, [id]);
+
+        const resultSum = await db.getFirstAsync(
+          `SELECT quantite FROM stock WHERE lot = ? AND designation = ?`,
+          [lot, designation]
+        );
+
+        const quantiteSum = (resultSum as { quantite: number | null })?.quantite ?? 0;
+
+        let sum: number = quantiteSum - quantiteHistory;
+
+        if (sum <= 0) {
+          await db.runAsync(
+            `DELETE FROM stock WHERE lot = ? AND designation = ?`,
+            [lot, designation]
+          );
+        } else {
+          await db.runAsync(
+            `UPDATE stock SET quantite = ? WHERE lot = ? AND designation = ?`,
+            [sum, lot, designation]
+          );
+          setTotalSum(sum);
+        }
       }
         catch (error) {
           if (error instanceof Error) {
@@ -45,7 +77,6 @@ const ModifierStockData = () => {
 
     const { lot, designation } = result as { lot: string; designation: string };
 
-    // Calculate totalQuantite
     const sumQuantite: Array<{ quantite: number | null }> = await db.getAllAsync(
       `SELECT quantite FROM history WHERE lot = ? AND designation = ?`,
       [lot, designation]
@@ -56,16 +87,14 @@ const ModifierStockData = () => {
       0
     );
 
-console.log(totalQuantite);
+    console.log(totalQuantite);
 
-// Update quantite in stock
-await db.getFirstAsync(
-  `UPDATE stock SET quantite = ? WHERE lot = ? AND designation = ?`,
-  [totalQuantite, lot, designation]
-);
+    await db.getFirstAsync(
+        `UPDATE stock SET quantite = ? WHERE lot = ? AND designation = ?`,
+        [totalQuantite, lot, designation]
+      );
 
-// Update state
-setTotalSum(totalQuantite);
+    setTotalSum(totalQuantite);
       }
         catch (error) {
           if (error instanceof Error) {
@@ -181,8 +210,10 @@ const styles = StyleSheet.create({
     
       normal: {
         backgroundColor: "yellow",
-      }, input: {
-        color: "white",
+      }, 
+      
+      input: {
+        color: "black",
         height: 40,
         borderColor: 'gray',
         borderWidth: 1,
