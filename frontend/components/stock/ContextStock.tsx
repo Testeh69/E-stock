@@ -18,8 +18,10 @@ export const StockDataDisplay = createContext<{
     listSelectedItem:Stock[]|null|string;
     totalSum:number|null;
     setTotalSum : React.Dispatch<React.SetStateAction<number|null>>;
+    setListItemDelete :React.Dispatch<React.SetStateAction<number[]>>; 
   }>({
       listSelectedItem : null,
       totalSum: null,
       setTotalSum: () => {},
-  })
+      setListItemDelete: () => {}, 
+    })
