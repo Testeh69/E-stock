@@ -16,7 +16,6 @@ const StockData = () => {
         }
         else{
           setListItemDelete((prev) => (prev ? [...prev, element] : [element]));
-    
         }
       };
 
@@ -27,13 +26,10 @@ const StockData = () => {
             data={ Array.isArray(listItem) ? listItem : []}
             keyExtractor={(item) => item.id?.toString() ?? 'defaultKey'}
             renderItem={({ item }) => (
-                <View
-                style={{
+                <View style={{
                     backgroundColor: 'blue',
                     display: 'flex',
-                    justifyContent: 'space-evenly',
-                }}
-                >
+                    justifyContent: 'space-evenly',}}>
                 <TouchableHighlight
                 onPress={() => item.id ?pushInDelete(item.id): null}
                 style={item.id ? (listItemDelete?.includes(item.id) ? styles.selected : styles.normal):null}

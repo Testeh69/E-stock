@@ -66,6 +66,47 @@ export default function StockScreen() {
     }
   }
 
+  const deleteDataInDatabase = async(id:number) => {
+    try {
+      const db = await SQLite.openDatabaseAsync('databaseName');
+      const result = await db.getFirstAsync(`SELECT lot, designation, quantite FROM history WHERE id = ?`,[id]);
+      const { lot, designation, quantite } = result as {
+        lot: string;
+        designation: string;
+        quantite: number | null;
+      };
+      const quantiteHistory: number = quantite ?? 0;
+      await db.runAsync(`DELETE FROM history WHERE id = ?`, [id]);
+      const resultSum = await db.getFirstAsync(`SELECT quantite FROM stock WHERE lot = ? AND designation = ?`,[lot, designation]);
+      const quantiteSum = (resultSum as { quantite: number | null })?.quantite ?? 0;
+      let sum: number = quantiteSum - quantiteHistory;
+      if (sum <= 0) {
+        await db.runAsync(`DELETE FROM stock WHERE lot = ? AND designation = ?`,[lot, designation]);
+        
+      } 
+      else {
+        await db.runAsync(`UPDATE stock SET quantite = ? WHERE lot = ? AND designation = ?`,[sum, lot, designation]);
+        setTotalSum(sum);
+      }
+      const updatedHistory : Stock[]|null|string= await db.getAllAsync(
+        `SELECT * FROM history WHERE lot = ? AND designation = ?`,
+        [lot, designation]
+      );
+   
+      setListSelectedItem(updatedHistory);
+    }
+    catch (error) {
+      if (error instanceof Error) {
+        console.error("Error message:", error.message);
+        alert(`Error: ${error.message}`);} 
+      else {
+        console.error("Unknown error:", error);
+        alert("An unknown error occurred while saving data.");
+        }
+      }
+      alert(`data deleted succesfully`);
+      setListItemDelete([])
+    }
 
   const confirmDeletion = () => {
     Alert.alert(
@@ -73,8 +114,13 @@ export default function StockScreen() {
       "Êtes-vous sûr de vouloir supprimer les données ?",
       [
         { text: "Annuler", style: "cancel" },
-        { text: "Confirmer", onPress: deleteData },
-      ],
+        { text: "Confirmer",
+          onPress: () => handleState === 0? 
+            deleteData() 
+            : (Array.isArray(listItemDelete) && listItemDelete.length > 0 ?
+              deleteDataInDatabase(listItemDelete[0]) 
+              : null)
+        }],
       { cancelable: false }
     );
   };
@@ -111,14 +157,12 @@ export default function StockScreen() {
           getData.designation,
           getData.lot
         );
-  
-        // Check if history data exists and update state
         if (getDataHistory && getDataHistory.length > 0) {
           setTotalSum(getDataHistory.reduce(
             (hist, item) => item.quantite? hist + item.quantite :0,
             0
           ))
-          setListSelectedItem(getDataHistory);  // Ensure setListSelectedItem updates correctly
+          setListSelectedItem(getDataHistory);  
         } else {
           console.log('No matching history records found');
         }
@@ -168,29 +212,35 @@ export default function StockScreen() {
            : 
           (<Text>Chargement des articles...</Text>))
           : 
-            <ModifierDataDisplay.Provider value = {{listSelectedItem, totalSum, setTotalSum}}>
+            <ModifierDataDisplay.Provider value = {{listSelectedItem, totalSum, setTotalSum, setListItemDelete}}>
               <ModifierStockData />
             </ModifierDataDisplay.Provider>
         }
         <View style={styles.pannel__button}>{
-          handleState === 0 ?          
-          <Button
-            title={listItemDelete.length > 0 ? `Delete ${listItemDelete.length}` : 'Delete All'}
-            onPress={confirmDeletion}
-            color="#841584"
-            accessibilityLabel="Delete button"/>: 
-            (listItemDelete.length === undefined ?  
-            <Button
-            title={listItemDelete.length > 0 ? `Delete ${listItemDelete.length}` : 'Delete All'}
-            onPress={confirmDeletion}
-            color="#841584"
-            accessibilityLabel="Delete button"/>:
-            null)}
-          {(listItemDelete.length === 1 && handleState === 0) || handleState === 1 ? (
-            <Button
-              onPress={() => handleStateModifier()}
+          handleState === 0 ? 
+            <Button 
+              title={listItemDelete.length > 0 ? `Delete ${listItemDelete.length}` : 'Delete All'} 
+              onPress={confirmDeletion} 
+              color="#841584" 
+              accessibilityLabel="Delete button"
+            />
+            : 
+            (listItemDelete.length >=1 ? 
+              <Button 
+                title={`Delete`} 
+                onPress={confirmDeletion} 
+                color="#841584" 
+                accessibilityLabel="Delete button"
+              />
+              :
+              null)}
+          {(listItemDelete.length === 1 && handleState === 0) || handleState === 1 ? 
+            (<Button 
+              onPress={() => handleStateModifier()} 
               title={handleState === 0 ? 'Modifier' : 'Back'}
-            />): null}
+            />)
+            : 
+            null}
         </View>
       </View>   
     </View>
