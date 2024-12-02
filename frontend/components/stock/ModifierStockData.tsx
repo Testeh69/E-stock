@@ -63,14 +63,14 @@ const ModifierStockData = () => {
             data={Array.isArray(listSelectedItem) ? listSelectedItem : null}
             keyExtractor={(item) => item.id?.toString() ?? 'defaultKey'} 
             renderItem={({ item }) => (
-              <View style={{backgroundColor: 'blue',display: 'flex',justifyContent: 'space-evenly',}}>
-                <TouchableHighlight style={[styles.elements, item.id === handleState ? styles.selected : styles.normal]} 
+              <View style={{display: 'flex',justifyContent: 'space-evenly',}}>
+                <TouchableHighlight style={[styles.elements, item.id === handleState ? styles.selected : null]} 
                   onPress={() => updateElement(item.id ?? 0)}>
                   {item.id === handleState ? (
                   <>
-                    <Text style={{ color: "black" }}>{`id: ${item.id}`}</Text>
-                    <Text style={{ color: "black" }}>{`Designation: ${item.designation}`}</Text>
-                    <Text style={{ color: "black" }}>{`Lot: ${item.lot}`}</Text>
+                    <Text style={{ color: "white" }}>{`Designation: ${item.designation} `}</Text>
+                    <Text style={{ color: "white" }}>{`Lot: ${item.lot} `}</Text>
+                    <Text style={{ color: "white" }}>{`Quantité(s): `}</Text>
                     <TextInput
                       style={styles.input}
                       placeholder={`${item.quantite}`}
@@ -80,10 +80,9 @@ const ModifierStockData = () => {
                   </>
                 ) : (
                   <>
-                    <Text style={{ color: "black" }}>{`id: ${item.id}`}</Text>
-                    <Text style={{ color: "black" }}>{`Designation: ${item.designation}`}</Text>
-                    <Text style={{ color: "black" }}>{`Lot: ${item.lot}`}</Text>
-                    <Text style={{ color: "black" }}>{`Quantité(s): ${item.quantite}`}</Text>
+                    <Text style={{ color: "white" }}>{`Designation: ${item.designation} `}</Text>
+                    <Text style={{ color: "white" }}>{`Lot: ${item.lot} `}</Text>
+                    <Text style={{ color: "white" }}>{`Quantité(s): ${item.quantite} `}</Text>
                   </>)}
                 </TouchableHighlight>
               </View>
@@ -107,13 +106,13 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         textAlign: "center",
         borderRadius: 8,
-        backgroundColor: 'yellow',
+        backgroundColor:"rgb(49 46 129)",
         color: 'white',
-        height: 40,
+        height: 70,
         padding: 5,
         margin: 2,
-        marginTop: 20,
-        marginBottom: 20,
+        marginTop: 10,
+        marginBottom: 10,
       },
 
     elements__modifier: {
@@ -132,17 +131,15 @@ const styles = StyleSheet.create({
         marginBottom: 20,
       },
       selected: {
-        backgroundColor: "red",
+        backgroundColor: "rgb(99 102 241)",
       },
     
-      normal: {
-        backgroundColor: "yellow",
-      }, 
+ 
       
       input: {
+        borderColor:"transparent",
         color: "black",
         height: 40,
-        borderColor: 'gray',
         borderWidth: 1,
         marginTop: 8,
         paddingHorizontal: 8,

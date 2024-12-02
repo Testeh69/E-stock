@@ -113,7 +113,7 @@ export default function QrScreen() {
   return (
     <View style={styles.wrappers}>
       <View style={styles.container}>
-        <Text style={styles.titles}>Inventaire</Text>
+        <Text style={styles.titles}>QR CODE</Text>
       </View>
       <View style={styles.body}>
         <SetQrData.Provider value = {{setQrDataDesignation, setQrDataLot}}>
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
   wrappers: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgb(30, 30, 30',
   },
   container: {
     marginTop: 50,
@@ -146,13 +146,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '40%',
     height: 50, // Remplace les pourcentages
-    backgroundColor: '#F61515',
     borderRadius: 10, // Fixe les valeurs numériques
   },
   
   titles: {
     fontWeight: 'bold',
     fontSize: 20,
+    color:"white"
+
   },
 
   body: {
@@ -161,7 +162,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'space-evenly',
     alignItems: 'center',
-    backgroundColor: 'red',
+    backgroundColor: "rgb(38, 38, 38)",
     width: '100%',
   },
 

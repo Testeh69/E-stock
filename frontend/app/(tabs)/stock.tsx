@@ -199,7 +199,7 @@ export default function StockScreen() {
 
   return (
     <View style={styles.wrapper}>
-      <Text style={{ backgroundColor: 'green', marginTop: 40, marginBottom: 50 }}>
+      <Text style={{ display:"flex", justifyContent:"center", alignItems:'center',marginTop:50, marginBottom: 30,fontSize: 20,fontWeight:"bold", color:"rgb(245,245,245)"}}>
           Stock
       </Text>
 
@@ -248,14 +248,13 @@ export default function StockScreen() {
 
 const styles = StyleSheet.create({
   changeState: {
-    backgroundColor: "green",
+    backgroundColor: "rgb(38, 38, 38)",
     height: "85%",
     width: "100%",
     padding: 10,
   },
 
   pannel__button: {
-    backgroundColor: "yellow",
     width: "100%",
     display: "flex",
     flexDirection: "row",
@@ -271,22 +270,18 @@ const styles = StyleSheet.create({
     height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'red',
+    backgroundColor: 'rgb(20, 20, 20)',
   },
 
   selected: {
-    backgroundColor: "red",
   },
 
-  normal: {
-    backgroundColor: "yellow",
-  },
+
 
   listItem: {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: 'blue',
     padding: 10,
   },
 

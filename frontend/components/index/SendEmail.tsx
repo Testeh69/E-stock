@@ -92,7 +92,7 @@ export default function SendEmail (){
     return (
       <View style = { styles.wrapper__email}>
         <TouchableOpacity style={styles.button} onPress={confirmSendData} >
-          <Text>Send</Text>
+          <Text>Send Data</Text>
         </TouchableOpacity>
       </View>
 
@@ -116,6 +116,11 @@ const styles = StyleSheet.create({
       height: 30,
       width: 100,
       borderRadius:10,
-      backgroundColor:"cyan",
+      backgroundColor:"rgb(245 158 11)",
+      shadowColor: 'rgb(245 158 11)', 
+      shadowOffset: { width: 0, height: 4 }, 
+      shadowOpacity: 0.8, 
+      shadowRadius: 10,
+      elevation: 10, 
     }
   })
