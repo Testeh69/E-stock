@@ -18,7 +18,7 @@ This repository contains two sofwtares:
 
 
 
-**Note**: I known that the code is a mess.
+## 3)**Note**: I known that the code is a mess.
 
 
 **Technologie Used**: React Native, Expo, Typescript, Sqlite, Python
