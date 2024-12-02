@@ -22,7 +22,7 @@ export default function FormDataQr(){
             </View>
             <View style = {styles.information}>
                 <Text>
-                    Quantité :  
+                    Quantité(s) :  
                 </Text>
                 <TextInput 
                     style={styles.input}
@@ -46,26 +46,43 @@ const styles = StyleSheet.create({
     information:{
       display: "flex",
       flexDirection: "row",
-      backgroundColor: "green",
+      backgroundColor: "rgb(99 102 241)",
       justifyContent: "space-evenly",
       alignItems: "center",
-      width: "80%"
+      width: "80%",
+      height:"20%",
+      borderRadius:5,
+      shadowColor: "rgb(99 102 241)", // Couleur de l'ombre
+      shadowOffset: { width: 0, height: 4 }, // Position de l'ombre
+      shadowOpacity: 0.8, // Opacité de l'ombre
+      shadowRadius: 10, // Rayon de l'ombre
+      elevation: 10, // Util
+   
     },
   
     data:{
       backgroundColor: "white",
+      borderRadius:5,
       width: "80%",
       display: "flex",
       justifyContent: "space-evenly",
       alignItems: "center",
-      height: "30%"
+      height: "30%",
+      shadowColor: 'white', // Couleur de l'ombre
+      shadowOffset: { width: 0, height: 4 }, // Position de l'ombre
+      shadowOpacity: 0.8, // Opacité de l'ombre
+      shadowRadius: 10, // Rayon de l'ombre
+      elevation: 10, // Util
     },
     input: {
-      height: 40,
-      borderColor: 'gray',
-      borderWidth: 1,
-      marginTop: 8,
-      paddingHorizontal: 8,
+        display:"flex",
+        flexDirection:"column",
+        justifyContent:"center",
+        alignItems:"center",
+        textAlign:"center",
+        height: "100%",
+        borderRadius:5,
+        color:"white"
     },
 
   });

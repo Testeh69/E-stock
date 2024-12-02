@@ -47,10 +47,13 @@ const styles = StyleSheet.create({
         backgroundColor: 'blue',
         height: 300, // Remplace les pourcentages par des pixels ou une valeur adaptative
         width: '80%',
+        borderRadius:10
       },
 
     apicamera:{
-        flex:1
+        flex:1,
+        borderRadius:10
+
       },
 
 

@@ -27,7 +27,6 @@ const StockData = () => {
             keyExtractor={(item) => item.id?.toString() ?? 'defaultKey'}
             renderItem={({ item }) => (
                 <View style={{
-                    backgroundColor: 'blue',
                     display: 'flex',
                     justifyContent: 'space-evenly',}}>
                 <TouchableHighlight
@@ -57,22 +56,26 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         textAlign: "center",
         borderRadius: 8,
-        backgroundColor: 'black',
         color: 'white',
-        height: 40,
-        padding: 5,
-        margin: 2,
-        marginTop: 20,
-        marginBottom: 20,
+        height: 20,
+        marginTop: 30,
+        marginBottom: 30,
       },
 
 
       selected: {
-        backgroundColor: "red",
+        backgroundColor: "rgb(99 102 241)", 
+        borderRadius:10,
+        marginTop:10,
+        marginBottom:10,
       },
     
       normal: {
-        backgroundColor: "yellow",
+        backgroundColor:"rgb(49 46 129)",
+        borderRadius:10,
+        marginTop:10,
+        marginBottom:10,
+       
       }
 
 })

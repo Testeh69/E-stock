@@ -1,18 +1,23 @@
 import { View, Text, Image, StyleSheet } from 'react-native';
 import SendEmail from '@/components/index/SendEmail';
+import LinearGradient from 'react-native-linear-gradient';
+
+
 
 export default function HomeScreen() {
 
 
 
   return (
+   
     <View style = {styles.wrappers}>
-      <Image source={require('@/assets/images/E-Stock.png')} style={{ position: "absolute", flex: 1, marginTop:"30%"}}/>
       <View style={styles.container}>
         <Text style = {styles.titles}>Inventaire</Text>
       </View>
+      <Image source={require('@/assets/images/E-Stock.png')} style={{ position: "absolute", flex: 1, marginTop:"50%"}}/>
       <SendEmail/>
     </View>
+
   );
 }
 
@@ -28,7 +33,7 @@ const styles = StyleSheet.create({
     marginBottom: 20
   },
   wrappers:{
-    backgroundColor:"white",
+    backgroundColor:"rgb(38, 38, 38)",
     flex: 1, 
     alignItems: 'center',
   },
@@ -47,6 +52,7 @@ const styles = StyleSheet.create({
   titles: {
     fontWeight:'bold',
     fontSize: 20,
-
+    color:"rgb(245,245,245)",
+    fontFamily: "Roboto"
   }
 });
